@@ -24,40 +24,11 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[test]"
       - run: pytest tests/ -q
-      - name: CLI 冒烟（build → info → verify）
-        run: |
-          python - <<'PY'
-          import json, pathlib
-          gj = {"type": "FeatureCollection", "features": [
-              {"type": "Feature", "properties": {"name": "p1"},
-               "geometry": {"type": "Polygon",
-                            "coordinates": [[[0,0],[100,0],[100,100],[0,100],[0,0]]]}},
-              {"type": "Feature", "properties": {"name": "s1"},
-               "geometry": {"type": "Point", "coordinates": [50, 50]}}]}
-          pathlib.Path("in.geojson").write_text(json.dumps(gj), encoding="utf-8")
-          PY
-          weft build in.geojson -o out.weft
-          weft info out.weft
-          weft verify out.weft
-          weft query out.weft --layer polygons --x 50 --y 50
+      # 跨平台冒烟写成脚本，避免 heredoc 在 Windows 的 PowerShell 下语法错误
+      - name: CLI 冒烟（build → info → verify → query + 门控）
+        run: python scripts/ci_smoke.py
       - name: 演示脚本
         run: python scripts/demo.py
-      - name: 许可证签发冒烟（社区版无证 → 企业功能报错）
-        run: |
-          python - <<'PY'
-          from weft.enterprise import plan_shards
-          from weft.license import LicenseError
-          from weft import Weft, Layer
-          w = Weft(10, 10, [Layer(name="p", kind="point")])
-          w.add_point("p", 1, 1, {})
-          w.commit()
-          try:
-              plan_shards(w, 2, lic=None)
-          except LicenseError:
-              print("门控正常：无证不可用企业功能")
-          else:
-              raise SystemExit("门控失效：无证竟然能分片")
-          PY
 
   build:
     runs-on: ubuntu-latest
@@ -71,10 +42,4 @@ jobs:
       - run: python -m build
       - name: 校验 wheel 内含公钥
         run: |
-          python - <<'PY'
-          import glob, zipfile
-          whl = glob.glob("dist/*.whl")[0]
-          names = zipfile.ZipFile(whl).namelist()
-          assert any(n.endswith("weft/license_public.pem") for n in names), "wheel 缺少公钥"
-          print("wheel ok:", whl, len(names), "files")
-          PY
+          python scripts/check_wheel.py

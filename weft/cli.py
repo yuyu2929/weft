@@ -150,12 +150,13 @@ def cmd_verify(args) -> None:
     from .codec import content_hash
 
     raw = open(args.file, "rb").read()
+    # deserialize 内部会校验尾部 blake2b 摘要；文件被改过一个字节就会抛错。
     weft = deserialize(raw)
     rebuilt = serialize(weft)
     report = {
         "file": args.file,
         "bytes": len(raw),
-        "content_hash": content_hash(raw),
+        "content_hash": content_hash(raw).hex(),     # bytes → hex，否则 JSON 序列化失败
         "roundtrip_identical": rebuilt == raw,
         "stats": weft.stats(),
         "ok": rebuilt == raw,
