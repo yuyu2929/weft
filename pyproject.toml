@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weft-gis"
+version = "0.2.0"
+description = "Weft：统一的矢量-栅格数据结构（分区四叉骨架 + 要素一次存储 + 叶子积分场）"
+readme = "README.md"
+requires-python = ">=3.9"
+# 双许可：个人与非营利组织用 PolyForm Noncommercial；任何营利使用需商业授权。
+# 这【不是】OSI 开源许可，对外请说 source-available，不要写 "open source"。
+authors = [{ name = "yuyu2929" }]
+keywords = ["gis", "vector", "raster", "quadtree", "hilbert", "spatial-index"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: GIS",
+    "License :: Other/Proprietary License",
+]
+dependencies = ["numpy>=1.21"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "cryptography>=41.0"]
+test = ["pytest>=7.0", "cryptography>=41.0"]
+
+[project.scripts]
+weft = "weft.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/yuyu2929/weft"
+Issues = "https://github.com/yuyu2929/weft/issues"
+
+[tool.setuptools]
+packages = ["weft"]
+license-files = ["LICENSE.md", "LICENSE-POLYFORM.md", "COMMERCIAL-LICENSE.md"]
+
+[tool.setuptools.package-data]
+weft = ["license_public.pem"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.weft-cache/
+*.weft
+!tests/fixtures/*.weft
+
+# 密钥材料（私钥永不入库）
+keys/*_private.pem
+keys/*_private.hex
+*.key
+
+# 环境
+.venv/
+venv/
+.env

@@ -1,0 +1,6 @@
+# 运行时依赖（原型刻意最小化：仅 numpy 用于向量化几何运算）
+numpy>=1.21
+
+# 开发/测试（可选）
+# pytest>=7.0
+# cryptography>=41.0   # Ed25519 与标准库的交叉验证（tests/test_license.py，缺失时自动跳过）
